@@ -37,7 +37,7 @@ class DataLoader(object):
             ],
         ).split(split_ratio=(1-valid_ratio))
         
-        self.train_loader, self,valid_loader = data.BucketIteratior.splits(
+        self.train_loader, self.valid_loader = data.BucketIteratior.splits(
             (train, valid),
             batch_size=batch_size,
             sevice='cuda:%d' % device if device >= 0 else 'cpu',
