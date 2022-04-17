@@ -93,3 +93,41 @@ class InitEngine(Engine):
                 engine,
                 metric_name
             )
+        
+        training_metric_names = ['loss', 'accuracy', '|param|', 'g_param']
+        
+        for metric_name in training_metric_names:
+            attach_running_average(train_engine, metric_name)
+            
+        if verbose >= VERBOSE_BATCH_WISE:
+            pbar = ProgressBar(bar_format=None, ncols=120)
+            pbar.attach(train_engine, training_metric_names)
+            
+        if verbose >= VERBOSE_EPOCH_WISE:
+            @train_engine.on(Events.EPOCH_COMPLETED)
+            def print_train_logs(engine):
+                print('Epoch {} - |param|={:.2e} |g_param|={:.2e} loss={:.4f}'.format(
+                    engine.state.epoch,
+                    engine.state.metrics['|param|'],
+                    engine.state.metrics['|g_param|'],
+                    engine.state.metrics['loss'],
+                    engine.state.metrics['accuracy'],
+                ))
+                
+        validation_metric_names = ['loss', 'accuracy']
+        
+        for metric_name in validation_metric_names:
+            attach_running_average(validation_engine, metric_name)
+            
+        if verbose >= VERBOSE_BATCH_WISE:
+            pbar = ProgressBar(bar_format_None, ncols=120)
+            pbar.attach(validation_engine, validation_metric_names)
+            
+        if verbose >= VERBOSE_EPOCH_WISE:
+            @validation_engine.on(Events.EPOCH_COMPLITED)
+            def print_valid_logs(engine):
+                print('Validation - loss={:.4e} accuracy={:.4f} best_loss={:.4e}'.format(
+                    engine.state.metrics['loss'],
+                    engine.state.metrics['accuracy'],
+                    engine.best_loss
+                ))
