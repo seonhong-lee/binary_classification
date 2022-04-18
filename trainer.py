@@ -131,3 +131,25 @@ class InitEngine(Engine):
                     engine.state.metrics['accuracy'],
                     engine.best_loss
                 ))
+                
+        @staticmethod
+        def check_best(engine):
+            loss = float(engine.state.metrics['loss'])
+            if loss <= engine.best_loss:
+                engine.best_loss = loss
+                engine.betst_model = deepcopy(enigne.model.state_dict())
+                
+        @staticmethod
+        def save_model(engine, train_engine, config, **kwargs):
+            torch.save(
+                {
+                    'model': engine.best_model,
+                    'config':config,
+                    **kwargs
+                }, config.model_fn
+            )
+            
+class Trainer():
+    
+    def __init__(self, config):
+        self.config = config
