@@ -153,3 +153,54 @@ class Trainer():
     
     def __init__(self, config):
         self.config = config
+        
+    def train(
+        self,
+        model,
+        crit,
+        optimizer,
+        train_loader,
+        valid_loader
+    ):
+        train_engine = InitEngine(
+            InitEngine.train,
+            model,
+            crit,
+            optimizer,
+            self.config
+        )
+        validation_engine = InitEngine(
+            InitEngine.validate,
+            model,
+            crit,
+            optimizer,
+            self.config
+        )
+        InitEngine.attach(
+            train_engine,
+            validation_engine,
+            verbose=self.config.verbose
+        )
+    
+        def run_validation(engine, validation_engine, valid_loader):
+            validation_engine.run(valid_loader, max_epochs=1)
+            
+        train_engine.add_event_handler(
+            Events.EPOCH_COMPLETED,
+            run_validation,
+            validation_engine, 
+            valid_loader
+        )
+        validation_engine.add_event_handler(
+            Events.EPOCH_COMPLETED,
+            InitEngine.check_best
+        )
+        
+        train_engine.run(
+            train_loader,
+            max_epochs=self.config.n_epochs
+        )
+        
+        model.load_state_dict(validation_engine.best_model)
+        
+        return model
