@@ -62,7 +62,7 @@ class InitEngine(Engine):
         }
     
     @staticmethod
-    def validate(engien, mini_batch):
+    def validate(engine, mini_batch):
         engine.model.eval()
         
         with torch.no_grad():
@@ -120,7 +120,7 @@ class InitEngine(Engine):
             attach_running_average(validation_engine, metric_name)
             
         if verbose >= VERBOSE_BATCH_WISE:
-            pbar = ProgressBar(bar_format_None, ncols=120)
+            pbar = ProgressBar(bar_format=None, ncols=120)
             pbar.attach(validation_engine, validation_metric_names)
             
         if verbose >= VERBOSE_EPOCH_WISE:
@@ -137,7 +137,7 @@ class InitEngine(Engine):
             loss = float(engine.state.metrics['loss'])
             if loss <= engine.best_loss:
                 engine.best_loss = loss
-                engine.betst_model = deepcopy(enigne.model.state_dict())
+                engine.betst_model = deepcopy(engine.model.state_dict())
                 
         @staticmethod
         def save_model(engine, train_engine, config, **kwargs):
