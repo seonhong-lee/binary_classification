@@ -17,4 +17,10 @@ def select_argparser():
     p.add_argument('--model_fn', required=True)
     p.add_argument('--train_fn', required=True)
     
+    p.add_argument('--gpu_id', type=int, default=-1)
+    p.add_argument('--verbose', type=int, default=2)
+    
+    p.add_argument('--min_vocab_freq', type=int, default=5)
+    p.add_argument('--max_vocab_size', type=int, default=999999)
+    
     pass
